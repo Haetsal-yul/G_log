@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>어느 신의 기록</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<style>html,body{margin:0;height:100%;background:#14161d}#game{position:fixed;inset:0}
+.tg-stage{--tg-bg:#14161d;--tg-fg:#ebe7f1;--tg-fg-rgb:235,231,241;--tg-font:'Gowun Batang',serif;--tg-mono:'Nanum Gothic Coding',ui-monospace,monospace;position:relative;width:100%;height:100%;overflow:hidden;background:var(--tg-bg);color:var(--tg-fg);font-family:var(--tg-font);transition:background-color .9s ease,color .9s ease;outline:none;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;box-sizing:border-box;color-scheme:dark}
+.tg-stage[data-tone="light"]{color-scheme:light}
+.tg-stage *,.tg-stage *::before,.tg-stage *::after{box-sizing:border-box}
+.tg-stage [hidden]{display:none!important}
+.tg-weather{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:1}
+.tg-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:64px max(22px,env(safe-area-inset-right,0px)) 40vh max(22px,env(safe-area-inset-left,0px));scrollbar-width:thin;z-index:2}
+.tg-log{max-width:32em;margin:0 auto;display:flex;flex-direction:column;gap:1.05em;font-size:17px;line-height:1.9;word-break:keep-all;overflow-wrap:anywhere;transition:opacity .35s ease}
+.tg-l{margin:0;animation:tg-in .35s ease-out both}
+.tg-say{display:flex;flex-direction:column;align-items:flex-start}
+.tg-name{font-size:.76em;font-weight:700;letter-spacing:.06em;line-height:1.4;margin-bottom:.15em;color:var(--c)}
+.tg-stage[data-tone="light"] .tg-name{color:color-mix(in srgb,var(--c) 48%,#1d1a24)}
+.tg-sys{align-self:center;max-width:100%;padding:.75em 1.15em;border:1px solid rgba(var(--tg-fg-rgb),.38);background:rgba(var(--tg-fg-rgb),.06);font-family:var(--tg-mono);font-size:.86em;line-height:1.7;text-align:center}
+.tg-emph{font-size:1.32em;font-weight:700;line-height:1.55}
+.tg-center{text-align:center}
+.tg-say.tg-center{align-items:center}
+.tg-b{font-weight:700}
+.tg-picked{align-self:flex-end;font-size:.86em;opacity:.6;padding:.1em .9em;border-right:2px solid rgba(var(--tg-fg-rgb),.5);text-align:right}
+.tg-warn{font-family:var(--tg-mono);font-size:.84em;color:#ff9a8a;border:1px dashed currentColor;padding:.6em .9em}
+.tg-stage[data-tone="light"] .tg-warn{color:#b42318}
+.tg-choices{max-width:32em;margin:1.8em auto 0;display:flex;flex-direction:column;gap:.6em}
+.tg-choices:empty{display:none}
+.tg-choice{display:flex;align-items:baseline;gap:.9em;width:100%;text-align:left;font:inherit;font-size:16px;line-height:1.6;color:inherit;background:rgba(var(--tg-fg-rgb),.05);border:1px solid rgba(var(--tg-fg-rgb),.32);border-radius:2px;padding:.85em 1.1em;cursor:pointer;animation:tg-in .35s ease-out both;transition:background-color .15s,border-color .15s}
+.tg-choice:hover,.tg-choice:focus-visible{background:rgba(var(--tg-fg-rgb),.13);border-color:rgba(var(--tg-fg-rgb),.8);outline:none}
+.tg-cn{font-family:var(--tg-mono);font-size:.8em;opacity:.55}
+.tg-cue{position:absolute;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));width:9px;height:9px;margin-left:-4.5px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);opacity:.6;animation:tg-cue 1.1s ease-in-out infinite;pointer-events:none;z-index:3}
+.tg-fx{position:absolute;inset:0;opacity:0;pointer-events:none;background:#000;z-index:5}
+.tg-hud{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));right:max(10px,env(safe-area-inset-right,0px));display:flex;gap:6px;z-index:6}
+.tg-hb{width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:50%;background:rgba(var(--tg-fg-rgb),.08);color:inherit;cursor:pointer;opacity:.7;padding:0}
+.tg-hb:hover,.tg-hb:focus-visible{opacity:1;background:rgba(var(--tg-fg-rgb),.16);outline:none}
+.tg-hb[aria-pressed="true"] .tg-off,.tg-hb[aria-pressed="false"] .tg-on{display:none}
+.tg-card{position:absolute;inset:0;z-index:4;display:grid;place-items:center;padding:24px;background:var(--tg-bg);text-align:center;cursor:default}
+.tg-card[data-kind="cover"]{cursor:pointer}
+.tg-card-in{max-width:28em;display:flex;flex-direction:column;align-items:center;gap:12px;animation:tg-in .6s ease-out both}
+.tg-eyebrow{margin:0;font-family:var(--tg-mono);font-size:11px;letter-spacing:.32em;opacity:.6}
+.tg-title{margin:0;font-size:clamp(26px,6vw,40px);line-height:1.3;font-weight:700;text-wrap:balance;word-break:keep-all}
+.tg-by{margin:0;opacity:.7;font-size:15px}
+.tg-btns{display:flex;flex-direction:column;gap:8px;margin-top:14px;min-width:13em}
+.tg-btn{font:inherit;font-size:15px;padding:.7em 1.4em;border:1px solid rgba(var(--tg-fg-rgb),.45);background:transparent;color:inherit;cursor:pointer;border-radius:2px}
+.tg-btn:hover{background:rgba(var(--tg-fg-rgb),.1)}
+.tg-btn.tg-primary{background:var(--tg-fg);color:var(--tg-bg);border-color:var(--tg-fg)}
+.tg-btn:focus-visible{outline:2px solid var(--tg-fg);outline-offset:3px}
+.tg-note{margin:10px 0 0;font-size:12.5px;opacity:.55;line-height:1.6;word-break:keep-all;white-space:pre-line}
+.tg-shake{animation:tg-shake .45s cubic-bezier(.36,.07,.19,.97)}
+@keyframes tg-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes tg-cue{0%,100%{transform:translateY(0) rotate(45deg);opacity:.25}50%{transform:translateY(4px) rotate(45deg);opacity:.75}}
+@keyframes tg-shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
+@media (prefers-reduced-motion:reduce){.tg-l,.tg-choice,.tg-card-in{animation:none}.tg-shake{animation-duration:.2s}}
+</style>
+</head>
+<body>
+<div id="game"></div>
+<script>
+(function(global){
+"use strict";
+var BG={"기본":"","밤":"#14161d","새벽":"#252c44","노을":"#4a2632","핏빛":"#3a0e15","숲":"#15231b","바다":"#0f2738","종이":"#f1f0ec","눈밭":"#e6ecf2","검정":"#000000","흰색":"#ffffff"};
+var THEME_BG={"밤":"#14161d","종이":"#f1f0ec"};
+var FONTS={"명조":"'Gowun Batang','Noto Serif KR','Apple SD Gothic Neo',serif","고딕":"'Gowun Dodum','Noto Sans KR','Apple SD Gothic Neo',sans-serif"};
+var SPEEDS={"느리게":70,"보통":36,"빠르게":16,"즉시":0};
+var SOUNDS=["톡","뾱","삑","띵","웅얼","타자기","없음"];
+var DEFAULT_HINT="클릭·터치·스페이스바로 다음 문장을 넘겨. 타이핑 소리가 나니까 소리를 켜 두면 좋아.";
+var RM=false;try{RM=global.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
+var ICON_SOUND='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z"/><path class="tg-on" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.6 7.6 0 0 1 0 11"/><path class="tg-off" d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
+var ICON_HOME='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-6.5 8 6.5"/><path d="M6.5 9.5V19h11V9.5"/></svg>';
+
+function hexRgb(h){h=String(h).replace("#","");if(h.length===3)h=h.split("").map(function(c){return c+c;}).join("");var n=parseInt(h,16)||0;return[n>>16&255,n>>8&255,n&255];}
+function lum(rgb){var a=rgb.map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});return .2126*a[0]+.7152*a[1]+.0722*a[2];}
+function resolveBg(arg,theme){var base=THEME_BG[theme]||THEME_BG["밤"];if(!arg||arg==="기본")return base;if(BG[arg])return BG[arg];if(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(arg))return arg;return null;}
+function el(tag,cls){var e=document.createElement(tag);if(cls)e.className=cls;return e;}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function parseInline(text){var out=[],re=/\*\*(.+?)\*\*/g,last=0,m;while((m=re.exec(text))){if(m.index>last)out.push({t:text.slice(last,m.index)});out.push({t:m[1],b:true});last=re.lastIndex;}if(last<text.length)out.push({t:text.slice(last)});return out;}
+function lsGet(k){try{return global.localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{if(v==null)global.localStorage.removeItem(k);else global.localStorage.setItem(k,v);}catch(e){}}
+
+/* typing sounds, synthesized: no audio files needed */
+var AC=null,MASTER=null,NOISE=null,lastBlip=0,VOL=0.7;
+function audio(){try{if(!AC){var C=global.AudioContext||global.webkitAudioContext;if(!C)return null;AC=new C();MASTER=AC.createGain();MASTER.gain.value=VOL;MASTER.connect(AC.destination);}if(AC.state==="suspended")AC.resume();}catch(e){return null;}return AC;}
+function setVolume(v){VOL=Math.max(0,Math.min(1,+v||0));if(MASTER)MASTER.gain.value=VOL;}
+function env(g,t,peak,dur){g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+0.004);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);}
+function blip(kind,pitch,force){
+  if(!kind||kind==="없음")return;var ac=audio();if(!ac)return;
+  var now=Date.now();if(!force&&now-lastBlip<34)return;lastBlip=now;
+  var t=ac.currentTime+0.002,r=Math.pow(2,((+pitch||0)+(Math.random()*1.4-0.7))/12),g=ac.createGain();g.connect(MASTER);
+  if(kind==="타자기"){
+    if(!NOISE){var len=Math.floor(ac.sampleRate*0.05);NOISE=ac.createBuffer(1,len,ac.sampleRate);var d=NOISE.getChannelData(0);for(var i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2);}
+    var s=ac.createBufferSource();s.buffer=NOISE;var bp=ac.createBiquadFilter();bp.type="bandpass";bp.frequency.value=2600*r;bp.Q.value=0.9;s.connect(bp);bp.connect(g);env(g,t,0.55,0.035);s.start(t);s.stop(t+0.05);return;
+  }
+  var o=ac.createOscillator(),stop=0.06;
+  if(kind==="뾱"){o.type="sine";o.frequency.setValueAtTime(980*r,t);o.frequency.exponentialRampToValueAtTime(360*r,t+0.06);env(g,t,0.3,0.07);stop=0.08;}
+  else if(kind==="삑"){o.type="square";o.frequency.setValueAtTime(440*r,t);env(g,t,0.07,0.04);stop=0.05;}
+  else if(kind==="띵"){o.type="triangle";o.frequency.setValueAtTime(1320*r,t);env(g,t,0.2,0.14);stop=0.15;}
+  else if(kind==="웅얼"){o.type="sawtooth";o.frequency.setValueAtTime((210+Math.random()*90)*r,t);var lp=ac.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1100*r;o.connect(lp);lp.connect(g);env(g,t,0.22,0.07);o.start(t);o.stop(t+0.08);return;}
+  else{o.type="sine";o.frequency.setValueAtTime(560*r,t);env(g,t,0.3,0.05);}
+  o.connect(g);o.start(t);o.stop(t+stop);
+}
+
+/* weather particles */
+function Weather(canvas){
+  var ctx=canvas.getContext("2d"),parts=[],kind=null,raf=0,w=0,h=0,rgb="235,231,241",T=0;
+  function resize(){var r=canvas.getBoundingClientRect();var dpr=Math.min(2,global.devicePixelRatio||1);w=r.width;h=r.height;canvas.width=Math.max(1,w*dpr);canvas.height=Math.max(1,h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
+  function spawn(init){var p={x:Math.random()*w,y:init?Math.random()*h:-24};
+    if(kind==="비"){p.vy=9+Math.random()*6;p.vx=-1.4;p.len=12+Math.random()*12;p.a=.18+Math.random()*.28;}
+    else if(kind==="눈"){p.vy=.5+Math.random()*1.1;p.r=1+Math.random()*2.4;p.ph=Math.random()*6.3;p.a=.45+Math.random()*.5;}
+    else{p.vy=.7+Math.random()*1;p.vx=.35+Math.random()*.6;p.r=3+Math.random()*3;p.rot=Math.random()*6.3;p.vr=(Math.random()-.5)*.05;p.ph=Math.random()*6.3;p.a=.6+Math.random()*.35;}
+    return p;}
+  function count(){var reduce=false;try{reduce=global.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}var base=kind==="비"?110:kind==="눈"?80:34;return Math.round(base*(reduce?.35:1)*Math.min(1.6,Math.max(.5,w/700)));}
+  function frame(){ctx.clearRect(0,0,w,h);T+=0.016;
+    for(var i=0;i<parts.length;i++){var p=parts[i];
+      if(kind==="비"){p.x+=p.vx;p.y+=p.vy;ctx.strokeStyle="rgba("+rgb+","+p.a+")";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+p.vx*p.len/p.vy,p.y+p.len);ctx.stroke();}
+      else if(kind==="눈"){p.y+=p.vy;var x=p.x+Math.sin(T+p.ph)*8;ctx.fillStyle="rgba("+rgb+","+p.a+")";ctx.beginPath();ctx.arc(x,p.y,p.r,0,6.283);ctx.fill();}
+      else{p.y+=p.vy;p.x+=p.vx+Math.sin(T*1.3+p.ph)*.6;p.rot+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle="rgba(244,182,200,"+p.a+")";ctx.beginPath();ctx.ellipse(0,0,p.r,p.r*.58,0,0,6.283);ctx.fill();ctx.restore();}
+      if(p.y>h+30||p.x<-40||p.x>w+40)parts[i]=spawn(false);}
+    raf=global.requestAnimationFrame(frame);}
+  this.set=function(k,fgRgb){if(fgRgb)rgb=fgRgb;global.cancelAnimationFrame(raf);raf=0;
+    if(!k){kind=null;parts=[];canvas.style.opacity=0;ctx.clearRect(0,0,w,h);return;}
+    kind=k;resize();parts=[];var n=count();for(var i=0;i<n;i++)parts.push(spawn(true));canvas.style.opacity=1;frame();};
+  this.color=function(fgRgb){rgb=fgRgb;};
+  this.resize=function(){if(kind){resize();}};
+  this.stop=function(){global.cancelAnimationFrame(raf);raf=0;};
+}
+
+function mount(root,data,opts){
+  opts=opts||{};
+  var mode=opts.mode==="preview"?"preview":"game";
+  var settings=data.settings||{};
+  var theme=THEME_BG[settings.theme]?settings.theme:"밤";
+  var chars=data.chars||{},snd=data.sound||{},nodes=data.nodes||[],scenes=data.scenes||{};
+  var saveKey="tg-save:"+(data.id||data.title||"game");
+  setVolume(typeof settings.volume==="number"?settings.volume:0.7);
+  root.innerHTML="";
+  var S=el("div","tg-stage");S.tabIndex=0;S.setAttribute("role","application");S.setAttribute("aria-label",data.title||"텍스트 게임");
+  S.innerHTML='<canvas class="tg-weather" aria-hidden="true"></canvas><div class="tg-scroll"><div class="tg-log" aria-live="polite"></div><div class="tg-choices"></div></div><div class="tg-cue" aria-hidden="true" hidden></div><div class="tg-fx" aria-hidden="true"></div><div class="tg-hud"></div><div class="tg-card" hidden></div>';
+  root.appendChild(S);
+  S.style.setProperty("--tg-font",FONTS[settings.font]||FONTS["명조"]);
+  var canvas=S.querySelector(".tg-weather"),scroll=S.querySelector(".tg-scroll"),log=S.querySelector(".tg-log"),choicesEl=S.querySelector(".tg-choices"),cue=S.querySelector(".tg-cue"),fxEl=S.querySelector(".tg-fx"),hud=S.querySelector(".tg-hud"),card=S.querySelector(".tg-card");
+  var W=new Weather(canvas);
+  var st,gen=0,clickWait=null,typing=false,skip=false,destroyed=false;
+  var userSound=lsGet("tg-sound")!=="0";
+  var fgRgb="235,231,241";
+
+  hud.innerHTML='<button class="tg-hb" type="button" data-h="sound" aria-label="타이핑 소리" aria-pressed="'+userSound+'">'+ICON_SOUND+'</button>'+(mode==="game"?'<button class="tg-hb" type="button" data-h="home" aria-label="처음 화면으로">'+ICON_HOME+'</button>':'');
+  hud.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;e.stopPropagation();
+    if(b.dataset.h==="sound"){userSound=!userSound;b.setAttribute("aria-pressed",String(userSound));lsSet("tg-sound",userSound?"1":"0");if(userSound)audio();}
+    else if(b.dataset.h==="home"){showTitle();}});
+
+  function fresh(){st={pc:0,scene:null,bg:resolveBg(null,theme),weather:null,speed:SPEEDS[settings.speed]!=null?settings.speed:"보통",sfx:true,emph:false,center:false};}
+  function applyBg(hex){st.bg=hex;var rgb=hexRgb(hex),light=lum(rgb)>0.42;var fg=light?"#24212b":"#ebe7f1";fgRgb=light?"36,33,43":"235,231,241";
+    S.style.setProperty("--tg-bg",hex);S.style.setProperty("--tg-fg",fg);S.style.setProperty("--tg-fg-rgb",fgRgb);S.dataset.tone=light?"light":"dark";W.color(fgRgb);}
+  function setWeather(k){st.weather=k||null;W.set(k||null,fgRgb);}
+  var sRaf=0;
+  function stopScroll(){global.cancelAnimationFrame(sRaf);sRaf=0;}
+  /* glide toward the newest line instead of jumping */
+  function scrollBottom(){
+    if(RM){scroll.scrollTop=scroll.scrollHeight;return;}
+    if(sRaf)return;
+    (function step(){
+      var target=scroll.scrollHeight-scroll.clientHeight,cur=scroll.scrollTop,d=target-cur;
+      if(d<=1){if(d>0)scroll.scrollTop=target;sRaf=0;return;}
+      scroll.scrollTop=cur+Math.max(1,d*0.09);
+      sRaf=global.requestAnimationFrame(step);
+    })();
+  }
+  function persist(){if(mode!=="game")return;lsSet(saveKey,JSON.stringify({scene:st.scene,bg:st.bg,weather:st.weather,speed:st.speed,sfx:st.sfx}));}
+  function loadSave(){try{var s=JSON.parse(lsGet(saveKey)||"null");return s&&s.scene!=null&&scenes[s.scene]!=null?s:null;}catch(e){return null;}}
+
+  function onActivate(e){
+    if(e&&e.target&&e.target.closest&&e.target.closest(".tg-hud,.tg-choices,.tg-btn"))return;
+    audio();
+    if(!card.hidden){if(card.dataset.kind==="cover")start(false);return;}
+    if(typing){skip=true;return;}
+    if(clickWait){var r=clickWait;clickWait=null;r();}
+  }
+  S.addEventListener("click",onActivate);
+  S.addEventListener("keydown",function(e){
+    if(e.key===" "||e.key==="Enter"){if(e.target.closest&&e.target.closest("button"))return;e.preventDefault();onActivate(e);}
+    else if(/^[1-9]$/.test(e.key)){var bs=choicesEl.querySelectorAll(".tg-choice");var b=bs[+e.key-1];if(b){e.preventDefault();b.click();}}
+  });
+  var ro=null;try{ro=new ResizeObserver(function(){W.resize();});ro.observe(S);}catch(e){}
+
+  function waitClick(g){return new Promise(function(res){cue.hidden=false;clickWait=function(){cue.hidden=true;res();};});}
+  function waitOrClick(ms,g){return new Promise(function(res){var done=false;function fin(){if(done)return;done=true;if(clickWait===fin)clickWait=null;res();}clickWait=fin;setTimeout(fin,ms);});}
+
+  async function typeText(host,text,cfg,g){
+    var segs=parseInline(text||""),delay=SPEEDS[st.speed];if(delay==null)delay=36;
+    typing=true;skip=delay===0;
+    for(var i=0;i<segs.length;i++){
+      var span=segs[i].b?el("strong","tg-b"):el("span");host.appendChild(span);
+      var cs=Array.from(segs[i].t);
+      for(var j=0;j<cs.length;j++){
+        if(g!==gen){typing=false;return;}
+        if(skip){span.textContent+=cs.slice(j).join("");break;}
+        var ch=cs[j];span.textContent+=ch;
+        if(userSound&&st.sfx&&/\S/.test(ch)&&!/[.,!?…·~'"“”‘’()\-—]/.test(ch))blip(cfg.sound,cfg.pitch);
+        if(j%4===0)scrollBottom();
+        await wait(delay*(/[.!?…]/.test(ch)?5:ch===","?2.5:1));
+      }
+    }
+    typing=false;scrollBottom();
+  }
+  async function showLine(n,g){
+    var node,host,cfg;
+    if(n.k==="say"){node=el("div","tg-l tg-say");var nm=el("span","tg-name");nm.textContent=n.name;var c=chars[n.name];nm.style.setProperty("--c",(c&&c.color)||"#c9c2d8");node.appendChild(nm);host=el("span","tg-text");node.appendChild(host);cfg=c?{sound:c.sound,pitch:c.pitch}:{sound:"톡",pitch:0};}
+    else if(n.k==="sys"){node=el("div","tg-l tg-sys");host=node;cfg=snd.sys||{sound:"삑",pitch:-5};}
+    else{node=el("p","tg-l tg-narr");host=node;cfg=snd.narr||{sound:"톡",pitch:0};}
+    if(st.emph)node.classList.add("tg-emph");if(st.center)node.classList.add("tg-center");st.emph=false;st.center=false;
+    log.appendChild(node);scrollBottom();
+    await typeText(host,n.text,cfg,g);
+  }
+  function showChoice(n,g){return new Promise(function(res){
+    choicesEl.innerHTML="";
+    (n.opts||[]).forEach(function(o,i){var b=el("button","tg-choice");b.type="button";b.innerHTML='<span class="tg-cn">'+(i+1)+'</span><span></span>';b.lastChild.textContent=o.text;
+      b.addEventListener("click",function(ev){ev.stopPropagation();if(g!==gen)return;choicesEl.innerHTML="";var p=el("p","tg-l tg-picked");p.textContent=o.text;log.appendChild(p);scrollBottom();res(o.to);});
+      choicesEl.appendChild(b);});
+    scrollBottom();});}
+  function flash(color,op,dur){fxEl.style.transition="none";fxEl.style.background=color;fxEl.style.opacity=op;void fxEl.offsetWidth;fxEl.style.transition="opacity "+dur+"ms ease-out";fxEl.style.opacity=0;}
+  async function doFx(n,g){
+    var a=n.arg||"";
+    switch(n.name){
+      case "흔들림":scroll.classList.remove("tg-shake");void scroll.offsetWidth;scroll.classList.add("tg-shake");await wait(120);break;
+      case "플래시":flash("#ffffff",0.9,450);await wait(160);break;
+      case "암전":fxEl.style.transition="opacity .5s ease";fxEl.style.background="#000";fxEl.style.opacity=1;await wait(520);if(g!==gen)return;await waitOrClick((parseFloat(a)||1)*1000,g);if(g!==gen)return;fxEl.style.opacity=0;await wait(480);break;
+      case "대기":await waitOrClick((parseFloat(a)||1)*1000,g);break;
+      case "화면지우기":log.style.opacity=0;await wait(360);if(g!==gen)return;log.innerHTML="";log.style.opacity=1;stopScroll();scroll.scrollTop=0;break;
+      case "배경색":var c=resolveBg(a,theme);if(c){applyBg(c);if(st.weather)W.color(fgRgb);}break;
+      case "날씨":setWeather(a==="끔"||!a?null:a);break;
+      case "속도":if(SPEEDS[a]!=null)st.speed=a;break;
+      case "강조":st.emph=true;break;
+      case "가운데":st.center=true;break;
+      case "공백":var sp=el("div","tg-gap");sp.setAttribute("aria-hidden","true");sp.style.height=Math.max(0,(parseFloat(a)||1)*1.9-1.05)+"em";log.appendChild(sp);scrollBottom();break;
+      case "소리":st.sfx=a!=="끔";break;
+      case "끝":showEnd(a);return "end";
+    }
+  }
+  function problem(msg){var p=el("div","tg-l tg-warn");p.textContent=msg;log.appendChild(p);scrollBottom();}
+  async function run(g){
+    while(g===gen&&!destroyed){
+      var n=nodes[st.pc];
+      if(!n){showEnd("");return;}
+      st.pc++;
+      if(n.t==="scene"){st.scene=n.name;persist();continue;}
+      if(n.t==="jump"){if(scenes[n.to]==null){problem("‘"+n.to+"’ 장면을 찾을 수 없어서 여기서 멈췄어.");return;}st.pc=scenes[n.to];continue;}
+      if(n.t==="fx"){var r=await doFx(n,g);if(r==="end")return;continue;}
+      if(n.t==="line"){await showLine(n,g);if(g!==gen)return;await waitClick(g);continue;}
+      if(n.t==="choice"){var to=await showChoice(n,g);if(g!==gen)return;if(scenes[to]==null){problem("‘"+to+"’ 장면을 찾을 수 없어서 여기서 멈췄어.");return;}st.pc=scenes[to];continue;}
+    }
+  }
+  function reset(){gen++;stopScroll();scroll.scrollTop=0;clickWait=null;typing=false;skip=false;log.innerHTML="";log.style.opacity=1;choicesEl.innerHTML="";cue.hidden=true;fxEl.style.transition="none";fxEl.style.opacity=0;card.hidden=true;card.innerHTML="";}
+  function start(resume){
+    reset();var g=gen;fresh();var hb2=hud.querySelector('[data-h="home"]');if(hb2)hb2.hidden=false;
+    if(resume){var s=loadSave();if(s){st.pc=scenes[s.scene];if(s.bg)st.bg=s.bg;if(SPEEDS[s.speed]!=null)st.speed=s.speed;st.sfx=s.sfx!==false;st.weather=s.weather||null;}}
+    else if(typeof opts.startPc==="number"&&opts.startPc>0){
+      st.pc=opts.startPc;
+      for(var i=0;i<opts.startPc;i++){var n=nodes[i];if(!n||n.t!=="fx")continue;
+        if(n.name==="배경색"){var c=resolveBg(n.arg,theme);if(c)st.bg=c;}
+        else if(n.name==="날씨")st.weather=(n.arg==="끔"||!n.arg)?null:n.arg;
+        else if(n.name==="속도"&&SPEEDS[n.arg]!=null)st.speed=n.arg;
+        else if(n.name==="소리")st.sfx=n.arg!=="끔";}
+    }
+    applyBg(st.bg);setWeather(st.weather);
+    try{S.focus({preventScroll:true});}catch(e){}
+    audio();run(g);
+  }
+  function cardHtml(eyebrow,title,sub,buttons,note){
+    var h='<div class="tg-card-in"><p class="tg-eyebrow"></p><h1 class="tg-title"></h1>'+(sub?'<p class="tg-by"></p>':'')+'<div class="tg-btns">';
+    buttons.forEach(function(b){h+='<button type="button" class="tg-btn'+(b.primary?' tg-primary':'')+'" data-a="'+b.a+'"></button>';});
+    h+='</div>'+(note?'<p class="tg-note"></p>':'')+'</div>';card.innerHTML=h;
+    card.querySelector(".tg-eyebrow").textContent=eyebrow;card.querySelector(".tg-title").textContent=title;
+    if(sub)card.querySelector(".tg-by").textContent=sub;if(note)card.querySelector(".tg-note").textContent=note;
+    var bs=card.querySelectorAll(".tg-btn");buttons.forEach(function(b,i){bs[i].textContent=b.label;});
+  }
+  card.addEventListener("click",function(e){var b=e.target.closest(".tg-btn");if(!b)return;e.stopPropagation();audio();
+    var a=b.dataset.a;if(a==="new"){lsSet(saveKey,null);start(false);}else if(a==="cont")start(true);else if(a==="again")start(false);else if(a==="title")showTitle();});
+  function showTitle(){reset();var hb=hud.querySelector('[data-h="home"]');if(hb)hb.hidden=true;fresh();applyBg(st.bg);setWeather(null);card.dataset.kind="title";
+    var has=!!loadSave();var btns=[{a:"new",label:"처음부터",primary:!has}];if(has)btns.unshift({a:"cont",label:"이어서 하기",primary:true});
+    cardHtml("INTERACTIVE NOVEL",data.title||"제목 없음",data.byline||"",btns,hintText());card.hidden=false;}
+  function hintText(){return typeof data.hint==="string"?data.hint.trim():DEFAULT_HINT;}
+  function showCover(){reset();fresh();applyBg(st.bg);card.dataset.kind="cover";cardHtml("INTERACTIVE NOVEL",data.title||"제목 없음",data.byline||"",[{a:"again",label:"처음부터",primary:true}],hintText());card.hidden=false;}
+  function showEnd(name){
+    gen++;clickWait=null;cue.hidden=true;choicesEl.innerHTML="";
+    if(mode==="game")lsSet(saveKey,null);
+    card.dataset.kind="end";
+    cardHtml("END",name||"끝",mode==="game"?(data.title||""):"",mode==="game"?[{a:"title",label:"처음 화면으로",primary:true}]:[{a:"again",label:"다시 재생",primary:true}],"");
+    setTimeout(function(){if(!destroyed)card.hidden=false;},mode==="game"?600:200);
+  }
+  fresh();applyBg(st.bg);
+  if(mode==="game")showTitle();else if(opts.autostart)start(false);else showCover();
+  return{destroy:function(){destroyed=true;stopScroll();gen++;W.stop();if(ro)ro.disconnect();root.innerHTML="";},restart:function(){start(false);}};
+}
+global.TGRuntime={DEFAULT_HINT:DEFAULT_HINT,mount:mount,blip:blip,audio:audio,setVolume:setVolume,BG:BG,SOUNDS:SOUNDS,SPEEDS:SPEEDS,THEME_BG:THEME_BG};
+})(window);
+</script>
+<script>TGRuntime.mount(document.getElementById("game"),{"format":1,"id":"p13lkrn88","title":"어느 신의 기록","byline":"어느 신의 기록","hint":"클릭, 터치, 스페이스 바","settings":{"theme":"밤","font":"명조","speed":"느리게","volume":0.7},"sound":{"narr":{"sound":"타자기","pitch":-12},"sys":{"sound":"없음","pitch":-8}},"chars":{"아발락시르":{"color":"#f4ede3","sound":"웅얼","pitch":-7},"율리히 단케":{"color":"#a47671","sound":"톡","pitch":-9}},"nodes":[{"t":"scene","name":"sc.1"},{"t":"line","k":"narr","text":"그 무엇으로도 불가해하며,"},{"t":"line","k":"narr","text":"어떤 방법으로도 깨지지 않는 불가침의 영역."},{"t":"fx","name":"날씨","arg":"눈"},{"t":"fx","name":"대기","arg":"1"},{"t":"line","k":"narr","text":"그곳에 홀로 머물며 고독에 익숙해진 몸으로는"},{"t":"line","k":"narr","text":"한낱 미물의 땅이 참으로 지저분해 보였다."},{"t":"fx","name":"속도","arg":"느리게"},{"t":"fx","name":"소리","arg":"끔"},{"t":"fx","name":"공백","arg":""},{"t":"fx","name":"가운데","arg":""},{"t":"line","k":"narr","text":"오직"},{"t":"fx","name":"가운데","arg":""},{"t":"line","k":"narr","text":"그만이"},{"t":"fx","name":"가운데","arg":""},{"t":"line","k":"narr","text":"…"},{"t":"fx","name":"가운데","arg":""},{"t":"line","k":"narr","text":"……"},{"t":"fx","name":"날씨","arg":"끔"},{"t":"fx","name":"소리","arg":"켬"},{"t":"fx","name":"공백","arg":""},{"t":"fx","name":"배경색","arg":"종이"},{"t":"line","k":"say","name":"율리히 단케","text":"아시르 님."},{"t":"line","k":"say","name":"율리히 단케","text":"아시르 님…?"},{"t":"line","k":"narr","text":"가만히 그의 머리칼을 쓸어넘기던 손을 멈춘다."},{"t":"line","k":"narr","text":"갈색의 얄다란 타래가 손가락 사이를 스치는 감각이 몹시도 특별하여 깊이 몰입한 까닭일까."},{"t":"line","k":"narr","text":"답지않게 그의 부름을 알아차리지 못하고 말았다."},{"t":"line","k":"say","name":"아발락시르","text":"왜 그러느냐."},{"t":"line","k":"narr","text":"부드럽게 되물으니, 그가 사랑스럽기 그지없는 눈을 깜빡이며 입술을 오물거린다."},{"t":"line","k":"say","name":"율리히 단케","text":"무얼 그리 골몰하신가 해서요."},{"t":"choice","opts":[{"text":"너 말고 달리 무어가 있겠느냐.","to":"너_선택1"},{"text":"비밀이다.","to":"비밀_선택2"}]},{"t":"scene","name":"너_선택1"},{"t":"line","k":"narr","text":"듀"},{"t":"jump","to":"sc.2"},{"t":"scene","name":"비밀_선택2"},{"t":"line","k":"narr","text":"듀듀"},{"t":"jump","to":"sc.2"},{"t":"scene","name":"sc.2"}],"scenes":{"sc.1":0,"너_선택1":31,"비밀_선택2":34,"sc.2":37}},{mode:"game"});</script>
+</body>
+</html>
